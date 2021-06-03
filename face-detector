@@ -1,0 +1,40 @@
+import cv2
+import smtplib
+
+def mail():
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login("sender_username", "Password")
+    message = "Found person in the camera"
+    s.sendmail("sender's mail id", "receiver's mail id", message)
+    s.quit()
+
+cap = cv2.VideoCapture(0)
+model = cv2.CascadeClassifier'haarcascade_frontalface_default.xml')
+
+a=0
+while True:
+    ret , photo = cap.read()
+    faces = model.detectMultiScale(photo)
+    if len(faces) == 0:
+        pass
+    else:   
+        for i in range(len(faces)):
+                x1 = faces[i][0]
+                y1 = faces[i][1]
+                x2 = x1 + faces[i][2]
+                y2 = y1 + faces[i][3]
+        
+                rphoto = cv2.rectangle(photo, (x1,y1) , (x2,y2), [0,255,0], 5)
+                cv2.imshow("image", rphoto)
+                
+                a=a+1
+                if a==1:
+                    mail()
+                    
+        if cv2.waitKey(10) == 13:
+                break
+cv2.destroyAllWindows        
+
+
+cap.release()
